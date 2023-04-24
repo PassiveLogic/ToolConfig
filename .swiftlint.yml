@@ -1,0 +1,139 @@
+# The default ruleset for our projects. 
+#
+# If a config file is found in the repository you are running the tooling against, 
+# this will be overriden with that repo's config file
+
+excluded:
+  - ${PWD}/.build
+
+reporter: xcode
+
+disabled_rules:
+  - statement_position
+  - trailing_comma
+  - opening_brace
+  - unused_setter_value
+  - type_name
+  # This one I'd like some more customization on, specifically only disable it for test classes
+  - type_body_length
+  - todo
+  - syntactic_sugar
+
+opt_in_rules:
+  - force_unwrapping
+  - discouraged_assert
+  - enum_case_associated_values_count
+  - explicit_init
+  - redundant_type_annotation
+  - unused_import
+  - missing_docs
+  - expiring_todo
+  - xct_specific_matcher
+
+trailing_whitespace:
+  ignores_empty_lines: true
+switch_case_alignment:
+  indented_cases: true
+line_length:
+  warning: 140
+  ignores_comments: true
+  ignores_interpolated_strings: true
+identifier_name:
+  excluded:
+    - id
+    - ID
+    - op
+    - ws
+    - db
+function_body_length: 60
+file_length:
+  ignore_comment_only_lines: true
+force_unwrapping:
+  severity: error
+nesting:
+  type_level: 3
+cyclomatic_complexity:
+  ignores_case_statements: true
+
+custom_rules:
+  logger_over_print:
+    name: "Raw print"
+    regex: "\\b(print\\()"
+    excluded: ".*\/main\\.swift"
+    capture_group: 0
+    message: "Prefer logger usage over raw prints"
+    severity: error
+    # by default we match anything that isn't a comment or raw string
+    match_kinds: &ignore_comments
+      - argument
+      - attribute.builtin
+      - attribute.id
+      - buildconfig.id
+      - buildconfig.keyword
+      - identifier
+      - keyword
+      - number
+      - objectliteral
+      - parameter
+      - placeholder
+      - string_interpolation_anchor
+      - typeidentifier
+      
+  string_to_data:
+    name: "Unsafe String to Data"
+    regex: "\\s*(\\.data\\(using: \\.utf8\\))"
+    capture_group: 0
+    message: "Use Data(myString.utf8) instead"
+    severity: error
+    match_kinds: *ignore_comments
+
+  public_in_test:
+    name: "Public In Test"
+    included: ".*\\/Tests\\/.*\\.swift"
+    regex: "(public )"
+    match_kinds: *ignore_comments
+    message: "public identifier should not be used in test targets"
+    severity: error
+  
+  non_final_test_class:
+    name: "Non-Final Test Class"
+    regex: "^(\\w*\\s?(?<!final )(?<!open )class \\w*: XCTestCase \\{$)"
+    message: "XCTestCase classes should be final"
+    severity: error
+    match_kinds: *ignore_comments
+  
+  no_fatalerror:
+    name: "Unnecessary fatalError"
+    regex: "\\b(fatalError\\()"
+    excluded: ".*\/main\\.swift"
+    capture_group: 0
+    message: "fatalError kills the executable. Use a throwing function instead."
+    severity: error 
+    match_kinds: *ignore_comments
+  
+  no_precondition:
+    name: "Unnecessary precondition"
+    regex: "\\b(precondition\\()"
+    capture_group: 0
+    message: "precondition kills the executable. Use a throwing function instead."
+    severity: error 
+    match_kinds: *ignore_comments
+
+  no_exit:
+    name: "Unnecessary exit"
+    regex: "\\b(exit\\()"
+    excluded: ".*\/main\\.swift"
+    capture_group: 0
+    message: "exit... exits the executable. Use a throwing function instead."
+    severity: error
+    match_kinds: *ignore_comments
+  
+  testable_import:
+    name: "@testable outside Test"
+    excluded: ".*\\/Tests\\/.*\\.swift"
+    regex: "(@testable import)"
+    capture_group: 0
+    message: "@testable should not be used outside of test modules"
+    severity: error
+    match_kinds: *ignore_comments
+    

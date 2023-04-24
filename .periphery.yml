@@ -1,0 +1,4 @@
+report_exclude:
+- '**/Generated/*.swift'
+retain_public: true
+disable_update_check: true
